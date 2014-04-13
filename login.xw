@@ -6,7 +6,7 @@
             alwaysOnTop="true">
         <script>
         $("ok").onClick(function (evt) {
-            $("confirm-window").get().setVisible(false);
+            $("confirm-window").setVisible(false);
         });
         </script>
         <vbox>
@@ -23,8 +23,8 @@
             alwaysOnTop="true">
         <script>
         $("ok").onClick(function (evt) {
-            if(!$("login").get().getText().length() || !$("pass").get().getText().length()) {
-                $("confirm-window").get().setVisible(true);
+            if(!$("login").getText().length || !$("pass").getText().length) {
+                $("confirm-window").setVisible(true);
             } else {
                 $formSubmitted();
             }
