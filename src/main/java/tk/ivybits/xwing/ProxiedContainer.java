@@ -1,8 +1,8 @@
 package tk.ivybits.xwing;
 
-import sun.org.mozilla.javascript.internal.Context;
-import sun.org.mozilla.javascript.internal.Function;
-import sun.org.mozilla.javascript.internal.ScriptableObject;
+import org.mozilla.javascript.Context;
+import org.mozilla.javascript.Function;
+import org.mozilla.javascript.ScriptableObject;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -24,9 +24,9 @@ public class ProxiedContainer<T extends Component> {
             public void mouseClicked(MouseEvent mouseEvent) {
                 if (call instanceof Function) {
                     Function func = (Function) call;
-                    Context context = Context.enter();
-                    ScriptableObject scope = context.initStandardObjects();
-                    func.call(context, scope, scope, new Object[] {mouseEvent});
+                    Context.enter();
+                    func.call(form.context, form.scope, form.scope, new Object[] {mouseEvent});
+                    Context.exit();
                 }
             }
         });

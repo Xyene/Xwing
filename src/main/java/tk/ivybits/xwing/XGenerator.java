@@ -1,8 +1,10 @@
 package tk.ivybits.xwing;
 
+import org.mozilla.javascript.Context;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
+import org.mozilla.javascript.ScriptableObject;
 
 import javax.script.ScriptException;
 import javax.swing.*;
@@ -142,8 +144,10 @@ public class XGenerator {
             public void endDocument() {
                 for (String script : scripts)
                     try {
-                        form.js.eval(script);
-                    } catch (ScriptException e) {
+                        Context.enter();
+                        form.context.evaluateString(form.scope, script, "<cmd>", 1, null);
+                        Context.exit();
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
             }
@@ -154,9 +158,10 @@ public class XGenerator {
     }
 
     private static void bindCrossovers(XForm form) throws ScriptException {
-        form.js.put("xform", form);
+        ScriptableObject.putProperty(form.scope, "xform", form);
         // http://stackoverflow.com/a/2554033
-        form.js.eval("for(var fn in xform) {\n" +
+        Context.enter();
+        form.context.evaluateString(form.scope, "for(var fn in xform) {\n" +
                 "  if(typeof xform[fn] === 'function') {\n" +
                 "    this[fn == '$' ? fn : '$' + fn] = (function() {\n" +
                 "      var method = xform[fn];\n" +
@@ -165,6 +170,7 @@ public class XGenerator {
                 "      };\n" +
                 "    })();\n" +
                 "  }\n" +
-                "}");
+                "}", "<cmd>", 1, null);
+        Context.exit();
     }
 }

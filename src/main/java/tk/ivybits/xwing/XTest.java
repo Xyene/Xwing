@@ -1,6 +1,7 @@
 package tk.ivybits.xwing;
 
 import javax.swing.*;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.Arrays;
 
@@ -14,7 +15,7 @@ public class XTest {
             self.setVisible(true);
         }
 
-        public void formSubmitted() {
+        public void formSubmitted(MouseEvent evt) {
             System.out.println("Form submitted!");
         }
     }
