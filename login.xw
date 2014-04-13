@@ -1,0 +1,48 @@
+<xul>
+    <window title="Fill in everything!"
+            id="confirm-window"
+            width="200"
+            height="200"
+            alwaysOnTop="true">
+        <script>
+        $("ok").onClick(function (evt) {
+            $("confirm-window").get().setVisible(false);
+        });
+        </script>
+        <vbox>
+            <label text="Really, you should ensure all fields are filled."/>
+            <button id="ok" text="OK"/>
+        </vbox>
+    </window>
+
+    <window title="Login"
+            id="main-window"
+            resizable="true"
+            width="200"
+            height="200"
+            alwaysOnTop="true">
+        <script>
+        $("ok").onClick(function (evt) {
+            if(!$("login").get().getText().length() || !$("pass").get().getText().length()) {
+                $("confirm-window").get().setVisible(true);
+            } else {
+                $formSubmitted();
+            }
+        });
+        </script>
+        <vbox>
+            <hbox>
+                <vbox>
+                    <label text="Login:"/>
+                    <label text="Password:"/>
+                </vbox>
+                <vbox>
+                    <textbox id="login"/>
+                    <textbox id="pass"/>
+                </vbox>
+            </hbox>
+            <button id="ok" text="OK"/>
+            <button id="cancel" text="Cancel"/>
+        </vbox>
+    </window>
+</xul>
