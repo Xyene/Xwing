@@ -21,11 +21,14 @@ public class ProxiedContainer<T extends Component> extends ScriptableObject {
     public void onClick(final Object call) {
         component.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(MouseEvent mouseEvent) {
+            public void mouseClicked(final MouseEvent mouseEvent) {
                 if (call instanceof Function) {
-                    Context.enter();
-                    ((Function) call).call(form.context, form.scope, form.scope, new Object[]{mouseEvent});
-                    Context.exit();
+                    form.jsTasks.add(new Runnable() {
+                        @Override
+                        public void run() {
+                            ((Function) call).call(form.context, form.scope, form.scope, new Object[]{mouseEvent});
+                        }
+                    });
                 }
             }
         });
@@ -34,11 +37,14 @@ public class ProxiedContainer<T extends Component> extends ScriptableObject {
     public void onPress(final Object call) {
         component.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(MouseEvent mouseEvent) {
+            public void mousePressed(final MouseEvent mouseEvent) {
                 if (call instanceof Function) {
-                    Context.enter();
-                    ((Function) call).call(form.context, form.scope, form.scope, new Object[]{mouseEvent});
-                    Context.exit();
+                    form.jsTasks.add(new Runnable() {
+                        @Override
+                        public void run() {
+                            ((Function) call).call(form.context, form.scope, form.scope, new Object[]{mouseEvent});
+                        }
+                    });
                 }
             }
         });
@@ -47,11 +53,14 @@ public class ProxiedContainer<T extends Component> extends ScriptableObject {
     public void onRelease(final Object call) {
         component.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseReleased(MouseEvent mouseEvent) {
+            public void mouseReleased(final MouseEvent mouseEvent) {
                 if (call instanceof Function) {
-                    Context.enter();
-                    ((Function) call).call(form.context, form.scope, form.scope, new Object[]{mouseEvent});
-                    Context.exit();
+                    form.jsTasks.add(new Runnable() {
+                        @Override
+                        public void run() {
+                            ((Function) call).call(form.context, form.scope, form.scope, new Object[]{mouseEvent});
+                        }
+                    });
                 }
             }
         });
@@ -96,7 +105,7 @@ public class ProxiedContainer<T extends Component> extends ScriptableObject {
                             System.out.println(name + Arrays.toString(args));
                             Class[] types = new Class[args.length];
                             for (int idx = 0; idx != types.length; idx++) {
-                                Class clazz = args[idx].getClass();
+                                Class clazz = args[idx] != null ? args[idx].getClass() : Object.class;
                                 if (clazz == Long.class)
                                     clazz = long.class;
                                 else if (clazz == Integer.class)
@@ -117,10 +126,18 @@ public class ProxiedContainer<T extends Component> extends ScriptableObject {
                                 types[idx] = clazz;
                             }
                             System.out.println(name + Arrays.toString(types));
+                            _outer:
                             for (Method method : component.getClass().getMethods()) {
-                                if (method.getName().equals(name) && Arrays.equals(method.getParameterTypes(), types)) {
-                                    System.out.println(method);
-                                    return method.invoke(component, args);
+                                if (method.getName().equals(name)) {
+                                    Class[] params = method.getParameterTypes();
+                                    if(params.length == types.length) {
+                                        for(int idx = 0; idx != params.length; idx++) {
+                                            if(!(types[idx] == params[idx] || params[idx].isAssignableFrom(params[idx])))
+                                                continue _outer;
+                                        }
+                                        System.out.println(method);
+                                        return method.invoke(component, args);
+                                    }
                                 }
                             }
                             return null;

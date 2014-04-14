@@ -24,7 +24,7 @@
         <script>
         $("ok").onClick(function (evt) {
             if(!$("login").getText().length || !$("pass").getText().length) {
-                // print('confirm window spawned');
+                print('confirm window spawned');
                 $("confirm-window").setVisible(true);
             } else {
                 $formSubmitted();
@@ -46,4 +46,10 @@
             <button id="cancel" text="Cancel"/>
         </vbox>
     </window>
+    <!-- Post-init script to display the window -->
+    <script>
+        $("main-window").pack();
+        $("main-window").setLocationRelativeTo(null);
+        $("main-window").setVisible(true);
+    </script>
 </xul>

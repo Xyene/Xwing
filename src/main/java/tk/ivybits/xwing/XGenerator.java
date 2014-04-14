@@ -1,6 +1,7 @@
 package tk.ivybits.xwing;
 
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.Function;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -19,7 +20,6 @@ import java.util.List;
 
 public class XGenerator {
     public static void bind(File xul, final XForm form) throws Exception {
-        bindCrossovers(form);
         SAXParserFactory factory = SAXParserFactory.newInstance();
         SAXParser saxParser = factory.newSAXParser();
 
@@ -142,11 +142,14 @@ public class XGenerator {
 
             @Override
             public void endDocument() {
-                for (String script : scripts)
+                for (final String script : scripts)
                     try {
-                        Context.enter();
-                        form.context.evaluateString(form.scope, script, "<cmd>", 1, null);
-                        Context.exit();
+                        form.jsTasks.add(new Runnable() {
+                            @Override
+                            public void run() {
+                                form.context.evaluateString(form.scope, script, "<cmd>", 1, null);
+                            }
+                        });
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -154,22 +157,5 @@ public class XGenerator {
         };
 
         saxParser.parse(xul, handler);
-    }
-
-    private static void bindCrossovers(XForm form) throws ScriptException {
-        ScriptableObject.putProperty(form.scope, "xform", form);
-        // http://stackoverflow.com/a/2554033
-        Context.enter();
-        form.context.evaluateString(form.scope, "for(var fn in xform) {\n" +
-                "  if(typeof xform[fn] === 'function') {\n" +
-                "    this[fn == '$' ? fn : '$' + fn] = (function() {\n" +
-                "      var method = xform[fn];\n" +
-                "      return function() {\n" +
-                "         return method.apply(xform, arguments);\n" +
-                "      };\n" +
-                "    })();\n" +
-                "  }\n" +
-                "}", "<cmd>", 1, null);
-        Context.exit();
     }
 }
