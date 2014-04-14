@@ -70,7 +70,7 @@ public class ProxiedContainer<T extends Component> extends ScriptableObject {
                     public Object call(Context cx, Scriptable scope, Scriptable thisObj,
                                        Object[] args) {
                         onClick(args[0]);
-                        return null;
+                        return thisObj;
                     }
                 };
             case "onPress":
@@ -79,7 +79,7 @@ public class ProxiedContainer<T extends Component> extends ScriptableObject {
                     public Object call(Context cx, Scriptable scope, Scriptable thisObj,
                                        Object[] args) {
                         onPress(args[0]);
-                        return null;
+                        return thisObj;
                     }
                 };
             case "onRelease":
@@ -88,7 +88,7 @@ public class ProxiedContainer<T extends Component> extends ScriptableObject {
                     public Object call(Context cx, Scriptable scope, Scriptable thisObj,
                                        Object[] args) {
                         onRelease(args[0]);
-                        return null;
+                        return thisObj;
                     }
                 };
             case "toCenter":
@@ -98,7 +98,7 @@ public class ProxiedContainer<T extends Component> extends ScriptableObject {
                         public Object call(Context cx, Scriptable scope, Scriptable thisObj,
                                            Object[] args) {
                             toCenter();
-                            return null;
+                            return thisObj;
                         }
                     };
                 return null;
@@ -145,7 +145,10 @@ public class ProxiedContainer<T extends Component> extends ScriptableObject {
                                                 continue _outer;
                                             }
                                         }
-                                        return method.invoke(component, args);
+                                        Object ret = method.invoke(component, args);
+                                        if(method.getReturnType() == void.class)
+                                            return thisObj;
+                                        return ret;
                                     }
                                 }
                             }

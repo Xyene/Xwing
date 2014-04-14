@@ -26,10 +26,7 @@
             $("ok").onClick(function (evt) {
                 if(!$("login").getText().length || !$("pass").getText().length) {
                     print('confirm window spawned');
-                    var dialog = $("confirm-window");
-                    dialog.pack();
-                    dialog.toCenter();
-                    dialog.setVisible(true);
+                    $("confirm-window").pack().toCenter().setVisible(true);
                 } else {
                     formSubmitted();
                     exit();
