@@ -20,8 +20,9 @@ public class ProxiedContainer<T extends Component> extends ScriptableObject {
         component.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(final MouseEvent mouseEvent) {
-                if (call instanceof Function) {Context.enter();
-                            ((Function) call).call(form.context, form.scope, form.scope, new Object[]{mouseEvent});
+                if (call instanceof Function) {
+                    Context.enter();
+                    ((Function) call).call(form.context, form.scope, form.scope, new Object[]{mouseEvent});
                     Context.exit();
                 }
             }
@@ -91,7 +92,7 @@ public class ProxiedContainer<T extends Component> extends ScriptableObject {
                     }
                 };
             case "toCenter":
-                if(component instanceof Window)
+                if (component instanceof Window)
                     return new BaseFunction() {
                         @Override
                         public Object call(Context cx, Scriptable scope, Scriptable thisObj,
@@ -106,7 +107,11 @@ public class ProxiedContainer<T extends Component> extends ScriptableObject {
                     @Override
                     public Object call(Context cx, Scriptable scope, Scriptable thisObj,
                                        Object[] args) {
-                        System.out.println(name);
+                        for (int idx = 0; idx != args.length; idx++) {
+                            if (args[idx] instanceof ProxiedContainer) {
+                                args[idx] = ((ProxiedContainer) args[idx]).get();
+                            }
+                        }
                         try {
                             Class[] types = new Class[args.length];
                             for (int idx = 0; idx != types.length; idx++) {
