@@ -154,7 +154,6 @@ public class XGenerator {
         };
 
         saxParser.parse(xul, handler);
-
     }
 
     private static void bindCrossovers(XForm form) throws ScriptException {

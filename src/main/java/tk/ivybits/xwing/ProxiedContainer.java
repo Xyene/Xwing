@@ -1,48 +1,56 @@
 package tk.ivybits.xwing;
 
 import org.mozilla.javascript.*;
-import sun.org.mozilla.javascript.internal.annotations.JSFunction;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class ProxiedContainer<T extends Component> extends ScriptableObject {
     private final XForm form;
     private final Component component;
-    HashMap<String, Method> proxied;
 
     public ProxiedContainer(XForm form, T component) {
         this.form = form;
         this.component = component;
-        proxied = new HashMap<>();
-        for (Method method : component.getClass().getMethods()) {
-            String name = method.getName();
-//            if (name.startsWith("is")) {
-//                proxied.put(name.substring(2), method);
-//            } else if (name.startsWith("get")) {
-//                proxied.put(name.substring(3), method);
-//            } else if (name.startsWith("set")) {
-//                proxied.put(name.substring(3), method);
-//            }
-            proxied.put(name, method);
-        }
-        System.out.println(proxied);
     }
 
-    @JSFunction
     public void onClick(final Object call) {
-        System.out.println(call + ": " + component);
         component.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent mouseEvent) {
                 if (call instanceof Function) {
-                    Function func = (Function) call;
                     Context.enter();
-                    func.call(form.context, form.scope, form.scope, new Object[]{mouseEvent});
+                    ((Function) call).call(form.context, form.scope, form.scope, new Object[]{mouseEvent});
+                    Context.exit();
+                }
+            }
+        });
+    }
+
+    public void onPress(final Object call) {
+        component.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent mouseEvent) {
+                if (call instanceof Function) {
+                    Context.enter();
+                    ((Function) call).call(form.context, form.scope, form.scope, new Object[]{mouseEvent});
+                    Context.exit();
+                }
+            }
+        });
+    }
+
+    public void onRelease(final Object call) {
+        component.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent mouseEvent) {
+                if (call instanceof Function) {
+                    Context.enter();
+                    ((Function) call).call(form.context, form.scope, form.scope, new Object[]{mouseEvent});
                     Context.exit();
                 }
             }
@@ -50,7 +58,7 @@ public class ProxiedContainer<T extends Component> extends ScriptableObject {
     }
 
     @Override
-    public Object get(String name, Scriptable start) {
+    public Object get(final String name, Scriptable start) {
         switch (name) {
             case "onClick":
                 return new BaseFunction() {
@@ -61,35 +69,78 @@ public class ProxiedContainer<T extends Component> extends ScriptableObject {
                         return null;
                     }
                 };
+            case "onPress":
+                return new BaseFunction() {
+                    @Override
+                    public Object call(Context cx, Scriptable scope, Scriptable thisObj,
+                                       Object[] args) {
+                        onPress(args[0]);
+                        return null;
+                    }
+                };
+            case "onRelease":
+                return new BaseFunction() {
+                    @Override
+                    public Object call(Context cx, Scriptable scope, Scriptable thisObj,
+                                       Object[] args) {
+                        onRelease(args[0]);
+                        return null;
+                    }
+                };
             default:
-                final Method proxy = proxied.get(name);
-                if (proxy != null) {
-                    return new BaseFunction() {
-                        @Override
-                        public Object call(Context cx, Scriptable scope, Scriptable thisObj,
-                                           Object[] args) {
-                            try {
-                                return proxy.invoke(component, args);
-                            } catch (ReflectiveOperationException e) {
-                                e.printStackTrace();
+                return new BaseFunction() {
+                    @Override
+                    public Object call(Context cx, Scriptable scope, Scriptable thisObj,
+                                       Object[] args) {
+                        try {
+                            System.out.println(name + Arrays.toString(args));
+                            Class[] types = new Class[args.length];
+                            for (int idx = 0; idx != types.length; idx++) {
+                                Class clazz = args[idx].getClass();
+                                if (clazz == Long.class)
+                                    clazz = long.class;
+                                else if (clazz == Integer.class)
+                                    clazz = int.class;
+                                else if (clazz == Short.class)
+                                    clazz = short.class;
+                                else if (clazz == Character.class)
+                                    clazz = char.class;
+                                else if (clazz == Byte.class)
+                                    clazz = byte.class;
+                                else if (clazz == Double.class)
+                                    clazz = double.class;
+                                else if (clazz == Float.class)
+                                    clazz = float.class;
+                                else if (clazz == Boolean.class)
+                                    clazz = boolean.class;
 
-                                return null;
+                                types[idx] = clazz;
                             }
-                        }
-                    };
+                            System.out.println(name + Arrays.toString(types));
+                            for (Method method : component.getClass().getMethods()) {
+                                if (method.getName().equals(name) && Arrays.equals(method.getParameterTypes(), types)) {
+                                    System.out.println(method);
+                                    return method.invoke(component, args);
+                                }
+                            }
+                            return null;
+                        } catch (ReflectiveOperationException e) {
+                            e.printStackTrace();
 
-                }
-                return super.get(name, start);
+                            return null;
+                        }
+                    }
+                };
         }
+    }
+
+    public <T> T get() {
+        return (T) component;
     }
 
     @Override
     public Object getDefaultValue(Class<?> typeHint) {
         return toString();
-    }
-
-    public <T> T get() {
-        return (T) component;
     }
 
     @Override

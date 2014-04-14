@@ -3,8 +3,7 @@ package tk.ivybits.xwing;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ScriptableObject;
 
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
+import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.util.HashMap;

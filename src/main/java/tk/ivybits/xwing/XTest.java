@@ -15,13 +15,12 @@ public class XTest {
             self.setVisible(true);
         }
 
-        public void formSubmitted(MouseEvent evt) {
+        public void formSubmitted() {
             System.out.println("Form submitted!");
         }
     }
     public static void main(String[] argv) throws ClassNotFoundException, UnsupportedLookAndFeelException, InstantiationException, IllegalAccessException {
         UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
-        System.out.println(Arrays.toString(UIManager.getInstalledLookAndFeels()));
         Login login = new Login();
     }
 }

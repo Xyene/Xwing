@@ -5,13 +5,13 @@
             height="200"
             alwaysOnTop="true">
         <script>
-        $("ok").onClick(function (evt) {
-            $("confirm-window").setVisible(false);
+        $("+ok").onClick(function (evt) {
+            $("confirm-window").dispose();
         });
         </script>
         <vbox>
             <label text="Really, you should ensure all fields are filled."/>
-            <button id="ok" text="OK"/>
+            <button id="+ok" text="OK"/>
         </vbox>
     </window>
 
@@ -24,6 +24,7 @@
         <script>
         $("ok").onClick(function (evt) {
             if(!$("login").getText().length || !$("pass").getText().length) {
+                // print('confirm window spawned');
                 $("confirm-window").setVisible(true);
             } else {
                 $formSubmitted();
