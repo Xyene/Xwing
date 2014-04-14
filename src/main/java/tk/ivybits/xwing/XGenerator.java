@@ -16,7 +16,7 @@ import java.util.*;
 import java.util.List;
 
 public class XGenerator {
-    public static void bind(File xul, final XForm form) throws Exception {
+    public static void bind(File xul, final XUI form) throws Exception {
         SAXParserFactory factory = SAXParserFactory.newInstance();
         SAXParser saxParser = factory.newSAXParser();
 
@@ -61,7 +61,6 @@ public class XGenerator {
                         to.setPreferredSize(dim);
                         to.setSize(dim);
                     }
-                    //  to.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
                 }
                 for (Map.Entry<String, String> pair : attributes.entrySet()) {
                     String k = pair.getKey();
@@ -74,6 +73,8 @@ public class XGenerator {
                         case "id":
                             form.byId.put(v, to);
                         default:
+                            // Delegate to setters
+                            // TODO: for example, if setter argument is Dimension and given data is "50, 50", convert to Dimension
                             String handle = "set" + Character.toTitleCase(k.charAt(0)) + k.substring(1);
                             try {
                                 for (Method raw : to.getClass().getMethods()) {

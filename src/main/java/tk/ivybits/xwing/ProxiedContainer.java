@@ -8,10 +8,10 @@ import java.awt.event.MouseEvent;
 import java.lang.reflect.Method;
 
 public class ProxiedContainer<T extends Component> extends ScriptableObject {
-    private final XForm form;
+    private final XUI form;
     private final Component component;
 
-    public ProxiedContainer(XForm form, T component) {
+    public ProxiedContainer(XUI form, T component) {
         this.form = form;
         this.component = component;
     }
@@ -108,6 +108,11 @@ public class ProxiedContainer<T extends Component> extends ScriptableObject {
                     public Object call(Context cx, Scriptable scope, Scriptable thisObj,
                                        Object[] args) {
                         for (int idx = 0; idx != args.length; idx++) {
+                            // If one of the arguments is a ProxiedContainer, replace it with the proxied object
+                            // On the JS side, this means being able to do things like
+                            // $("...").setVisible(...)
+                            // instead of
+                            // $("...").get().setVisible(...)
                             if (args[idx] instanceof ProxiedContainer) {
                                 args[idx] = ((ProxiedContainer) args[idx]).get();
                             }
@@ -116,6 +121,9 @@ public class ProxiedContainer<T extends Component> extends ScriptableObject {
                             Class[] types = new Class[args.length];
                             for (int idx = 0; idx != types.length; idx++) {
                                 Class clazz = args[idx] != null ? args[idx].getClass() : Object.class;
+                                // All Swing methods take primitives, however Rhino passes us the object primitives
+                                // Here we convert in a horrible manner object primitive classes to primitves
+                                // so that the reflection below may work
                                 if (clazz == Long.class)
                                     clazz = long.class;
                                 else if (clazz == Integer.class)
@@ -136,6 +144,7 @@ public class ProxiedContainer<T extends Component> extends ScriptableObject {
                                 types[idx] = clazz;
                             }
                             _outer:
+                            // Find a method matching the description
                             for (Method method : component.getClass().getMethods()) {
                                 if (method.getName().equals(name)) {
                                     Class[] params = method.getParameterTypes();
@@ -145,7 +154,9 @@ public class ProxiedContainer<T extends Component> extends ScriptableObject {
                                                 continue _outer;
                                             }
                                         }
+                                        // Found, invoke it
                                         Object ret = method.invoke(component, args);
+                                        // If it returns void return self; allows fluent interface in JS part
                                         if(method.getReturnType() == void.class)
                                             return thisObj;
                                         return ret;

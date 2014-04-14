@@ -1,12 +1,10 @@
 package tk.ivybits.xwing;
 
 import javax.swing.*;
-import java.awt.event.MouseEvent;
 import java.io.File;
-import java.util.Arrays;
 
 public class XTest {
-    public static class Login extends XForm {
+    public static class Login extends XUI {
         public Login() {
             super(new File("login.xw"));
         }
