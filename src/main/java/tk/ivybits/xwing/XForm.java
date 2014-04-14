@@ -23,7 +23,7 @@ public class XForm {
             context.evaluateString(scope,
                     "for(var fn in xform) {" +
                             "    if(typeof xform[fn] === 'function') {" +
-                            "      this[fn == '$' ? fn : '$' + fn] = (function() {" +
+                            "      this[fn] = (function() {" +
                             "        var method = xform[fn];" +
                             "        return function() {" +
                             "           return method.apply(xform, arguments);" +

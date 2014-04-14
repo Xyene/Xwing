@@ -31,7 +31,7 @@
                     dialog.toCenter();
                     dialog.setVisible(true);
                 } else {
-                    $formSubmitted();
+                    formSubmitted();
                     exit();
                 }
             });
