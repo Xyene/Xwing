@@ -13,20 +13,15 @@ public class XForm {
     HashMap<String, Component> byId = new HashMap<>();
     Context context;
     ScriptableObject scope;
-    Thread jsThread;
-    LinkedBlockingQueue<Runnable> jsTasks = new LinkedBlockingQueue<>();
 
     public XForm(final File ui) {
         try {
-            final Semaphore loadLock = new Semaphore(1);
-            loadLock.acquire();
-            jsThread = new Thread() {
-                public void run() {
-                    context = Context.enter();
-                    scope = context.initStandardObjects();
-                    ScriptableObject.putProperty(scope, "xform", XForm.this);
-                    context.evaluateString(scope,
-                            "for(var fn in xform) {" +
+            context = Context.enter();
+            System.out.println(context);
+            scope = context.initStandardObjects();
+            ScriptableObject.putProperty(scope, "xform", XForm.this);
+            context.evaluateString(scope,
+                    "for(var fn in xform) {" +
                             "    if(typeof xform[fn] === 'function') {" +
                             "      this[fn == '$' ? fn : '$' + fn] = (function() {" +
                             "        var method = xform[fn];" +
@@ -38,25 +33,8 @@ public class XForm {
                             "}" +
                             "this['print'] = function (s) {" +
                             "    Packages.java.lang.System['out'].println(s);" +
-                            "};", "<cmd>", 1, null);
-
-                    try {
-                        loadLock.release();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    while (true) {
-                        try {
-                            Runnable task = jsTasks.take();
-                            task.run();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            };
-            jsThread.start();
-            loadLock.acquire();
+                            "};", "<cmd>", 1, null
+            );
             XGenerator.bind(ui, XForm.this);
         } catch (Exception e) {
             throw new RuntimeException(e);

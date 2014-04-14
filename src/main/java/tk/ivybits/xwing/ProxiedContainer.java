@@ -20,13 +20,9 @@ public class ProxiedContainer<T extends Component> extends ScriptableObject {
         component.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(final MouseEvent mouseEvent) {
-                if (call instanceof Function) {
-                    form.jsTasks.add(new Runnable() {
-                        @Override
-                        public void run() {
+                if (call instanceof Function) {Context.enter();
                             ((Function) call).call(form.context, form.scope, form.scope, new Object[]{mouseEvent});
-                        }
-                    });
+                    Context.exit();
                 }
             }
         });
@@ -37,12 +33,9 @@ public class ProxiedContainer<T extends Component> extends ScriptableObject {
             @Override
             public void mousePressed(final MouseEvent mouseEvent) {
                 if (call instanceof Function) {
-                    form.jsTasks.add(new Runnable() {
-                        @Override
-                        public void run() {
-                            ((Function) call).call(form.context, form.scope, form.scope, new Object[]{mouseEvent});
-                        }
-                    });
+                    Context.enter();
+                    ((Function) call).call(form.context, form.scope, form.scope, new Object[]{mouseEvent});
+                    Context.exit();
                 }
             }
         });
@@ -53,12 +46,9 @@ public class ProxiedContainer<T extends Component> extends ScriptableObject {
             @Override
             public void mouseReleased(final MouseEvent mouseEvent) {
                 if (call instanceof Function) {
-                    form.jsTasks.add(new Runnable() {
-                        @Override
-                        public void run() {
-                            ((Function) call).call(form.context, form.scope, form.scope, new Object[]{mouseEvent});
-                        }
-                    });
+                    Context.enter();
+                    ((Function) call).call(form.context, form.scope, form.scope, new Object[]{mouseEvent});
+                    Context.exit();
                 }
             }
         });

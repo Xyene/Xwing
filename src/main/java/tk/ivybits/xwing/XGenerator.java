@@ -3,6 +3,7 @@ package tk.ivybits.xwing;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
+import sun.org.mozilla.javascript.internal.Context;
 
 import javax.swing.*;
 import javax.xml.parsers.SAXParser;
@@ -60,7 +61,7 @@ public class XGenerator {
                         to.setPreferredSize(dim);
                         to.setSize(dim);
                     }
-                  //  to.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
+                    //  to.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
                 }
                 for (Map.Entry<String, String> pair : attributes.entrySet()) {
                     String k = pair.getKey();
@@ -146,12 +147,9 @@ public class XGenerator {
             public void endDocument() {
                 for (final String script : scripts)
                     try {
-                        form.jsTasks.add(new Runnable() {
-                            @Override
-                            public void run() {
-                                form.context.evaluateString(form.scope, script, "<cmd>", 1, null);
-                            }
-                        });
+                        Context.enter();
+                        form.context.evaluateString(form.scope, script, "<cmd>", 1, null);
+                        Context.exit();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
