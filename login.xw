@@ -17,8 +17,7 @@
 
     <window title="Login"
             id="main-window"
-            resizable="true"
-            alwaysOnTop="true">
+            resizable="true">
         <script>
             var exit = function() {
                 $("main-window").dispose()
@@ -29,7 +28,7 @@
                     print('confirm window spawned');
                     var dialog = $("confirm-window");
                     dialog.pack();
-                    dialog.setLocationRelativeTo(null);
+                    dialog.toCenter();
                     dialog.setVisible(true);
                 } else {
                     $formSubmitted();
@@ -44,8 +43,8 @@
         <vbox>
             <hbox>
                 <vbox>
-                    <label text="Login:" resizable="false"/>
-                    <label text="Password:" resizable="false"/>
+                    <label text="Login:"/>
+                    <label text="Password:"/>
                 </vbox>
                 <vbox>
                     <textbox id="login" width="100"/>
@@ -60,7 +59,7 @@
     <!-- Post-init script to display the window -->
     <script>
         $("main-window").pack();
-        $("main-window").setLocationRelativeTo(null);
+        $("main-window").toCenter();
         $("main-window").setVisible(true);
     </script>
 </xul>

@@ -54,6 +54,12 @@ public class ProxiedContainer<T extends Component> extends ScriptableObject {
         });
     }
 
+    public void toCenter() {
+        // setLocationRelativeTo(null) does not work on Ubuntu 12.04 for centering window
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        component.setLocation(new Point((screenSize.width / 2) - (component.getWidth() / 2), screenSize.height / 2 - (component.getHeight() / 2)));
+    }
+
     @Override
     public Object get(final String name, Scriptable start) {
         switch (name) {
@@ -84,6 +90,17 @@ public class ProxiedContainer<T extends Component> extends ScriptableObject {
                         return null;
                     }
                 };
+            case "toCenter":
+                if(component instanceof Window)
+                    return new BaseFunction() {
+                        @Override
+                        public Object call(Context cx, Scriptable scope, Scriptable thisObj,
+                                           Object[] args) {
+                            toCenter();
+                            return null;
+                        }
+                    };
+                return null;
             default:
                 return new BaseFunction() {
                     @Override
