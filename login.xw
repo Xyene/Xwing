@@ -1,47 +1,58 @@
 <xul>
-    <window title="Fill in everything!"
+    <dialog title="Fill in everything!"
             id="confirm-window"
-            width="200"
-            height="200"
-            alwaysOnTop="true">
+            modal="true">
         <script>
-        $("+ok").onClick(function (evt) {
-            $("confirm-window").dispose();
-        });
+            $("exit_ok").onClick(function (evt) {
+                print('attempt close')
+                $("confirm-window").dispose();
+                print('exited');
+            });
         </script>
         <vbox>
             <label text="Really, you should ensure all fields are filled."/>
-            <button id="+ok" text="OK"/>
+            <button id="exit_ok" text="OK"/>
         </vbox>
-    </window>
+    </dialog>
 
     <window title="Login"
             id="main-window"
             resizable="true"
-            width="200"
-            height="200"
             alwaysOnTop="true">
         <script>
-        $("ok").onClick(function (evt) {
-            if(!$("login").getText().length || !$("pass").getText().length) {
-                print('confirm window spawned');
-                $("confirm-window").setVisible(true);
-            } else {
-                $formSubmitted();
+            var exit = function() {
+                $("main-window").dispose()
             }
-        });
+
+            $("ok").onClick(function (evt) {
+                if(!$("login").getText().length || !$("pass").getText().length) {
+                    print('confirm window spawned');
+                    var dialog = $("confirm-window");
+                    dialog.pack();
+                    dialog.setLocationRelativeTo(null);
+                    dialog.setVisible(true);
+                } else {
+                    $formSubmitted();
+                    exit();
+                }
+            });
+
+            $("cancel").onClick(function (evt) {
+                exit();
+            });
         </script>
         <vbox>
             <hbox>
                 <vbox>
-                    <label text="Login:"/>
-                    <label text="Password:"/>
+                    <label text="Login:" resizable="false"/>
+                    <label text="Password:" resizable="false"/>
                 </vbox>
                 <vbox>
-                    <textbox id="login"/>
-                    <textbox id="pass"/>
+                    <textbox id="login" width="100"/>
+                    <hiddentextbox id="pass" width="100"/>
                 </vbox>
             </hbox>
+            <hr/>
             <button id="ok" text="OK"/>
             <button id="cancel" text="Cancel"/>
         </vbox>

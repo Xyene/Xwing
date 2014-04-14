@@ -6,8 +6,6 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.HashMap;
 
 public class ProxiedContainer<T extends Component> extends ScriptableObject {
     private final XForm form;
@@ -101,8 +99,8 @@ public class ProxiedContainer<T extends Component> extends ScriptableObject {
                     @Override
                     public Object call(Context cx, Scriptable scope, Scriptable thisObj,
                                        Object[] args) {
+                        System.out.println(name);
                         try {
-                            System.out.println(name + Arrays.toString(args));
                             Class[] types = new Class[args.length];
                             for (int idx = 0; idx != types.length; idx++) {
                                 Class clazz = args[idx] != null ? args[idx].getClass() : Object.class;
@@ -125,17 +123,16 @@ public class ProxiedContainer<T extends Component> extends ScriptableObject {
 
                                 types[idx] = clazz;
                             }
-                            System.out.println(name + Arrays.toString(types));
                             _outer:
                             for (Method method : component.getClass().getMethods()) {
                                 if (method.getName().equals(name)) {
                                     Class[] params = method.getParameterTypes();
-                                    if(params.length == types.length) {
-                                        for(int idx = 0; idx != params.length; idx++) {
-                                            if(!(types[idx] == params[idx] || params[idx].isAssignableFrom(params[idx])))
+                                    if (params.length == types.length) {
+                                        for (int idx = 0; idx != params.length; idx++) {
+                                            if (!(types[idx] == params[idx] || params[idx].isAssignableFrom(params[idx]))) {
                                                 continue _outer;
+                                            }
                                         }
-                                        System.out.println(method);
                                         return method.invoke(component, args);
                                     }
                                 }
@@ -143,7 +140,6 @@ public class ProxiedContainer<T extends Component> extends ScriptableObject {
                             return null;
                         } catch (ReflectiveOperationException e) {
                             e.printStackTrace();
-
                             return null;
                         }
                     }

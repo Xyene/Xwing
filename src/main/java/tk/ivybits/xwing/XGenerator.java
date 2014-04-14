@@ -1,13 +1,9 @@
 package tk.ivybits.xwing;
 
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.Function;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
-import org.mozilla.javascript.ScriptableObject;
 
-import javax.script.ScriptException;
 import javax.swing.*;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -26,16 +22,20 @@ public class XGenerator {
         DefaultHandler handler = new DefaultHandler() {
             HashMap<String, Class> externs = new HashMap<String, Class>() {{
                 put("label", JLabel.class);
-                put("button", JButton.class);
+                put("button", XWidgets.Button.class);
                 put("radiobutton", JRadioButton.class);
                 put("textbox", JTextField.class);
+                put("hiddentextbox", JPasswordField.class);
                 put("textarea", JTextArea.class);
                 put("panel", XWidgets.Panel.class);
                 put("window", XWidgets.Frame.class);
+                put("dialog", XWidgets.Dialog.class);
                 put("tabbedpanel", XWidgets.TabbedPane.class);
                 put("hbox", XWidgets.HBox.class);
                 put("vbox", XWidgets.VBox.class);
                 put("buttongroup", XWidgets.ButtonGroup.class);
+                put("hr", XWidgets.HRuler.class);
+                put("vr", XWidgets.VRuler.class);
             }};
             Stack<Container> hierarchy = new Stack<>();
             boolean inScript = false;
@@ -54,12 +54,13 @@ public class XGenerator {
                     String width = attributes.get("width");
                     String height = attributes.get("height");
                     if (width != null || height != null) {
-                        if (width == null) width = "0";
-                        if (height == null) height = "0";
-                        Dimension dim = new Dimension(Integer.parseInt(width), Integer.parseInt(height));
+                        Dimension dim = new Dimension(
+                                width != null ? Integer.parseInt(width) : to.getPreferredSize().width,
+                                height != null ? Integer.parseInt(height) : to.getPreferredSize().height);
                         to.setPreferredSize(dim);
                         to.setSize(dim);
                     }
+                  //  to.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
                 }
                 for (Map.Entry<String, String> pair : attributes.entrySet()) {
                     String k = pair.getKey();
@@ -67,6 +68,7 @@ public class XGenerator {
                     switch (k) {
                         case "width":
                         case "height":
+                        case "resizable":
                             break;
                         case "id":
                             form.byId.put(v, to);

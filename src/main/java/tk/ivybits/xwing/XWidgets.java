@@ -1,18 +1,62 @@
 package tk.ivybits.xwing;
 
 import javax.swing.*;
+import javax.swing.border.BevelBorder;
+import javax.swing.plaf.synth.SynthButtonUI;
+import javax.swing.plaf.synth.SynthContext;
+import javax.swing.plaf.synth.SynthStyle;
 import java.awt.*;
+import java.lang.reflect.Field;
+
+import static javax.swing.WindowConstants.*;
 
 public class XWidgets {
+
+
+    public static class Button extends JButton {
+        {
+//            setBackground(Color.RED);
+//            setOpaque(true);
+//            setBorderPainted(false);
+//            setFocusPainted(false);
+//            setFocusable(false);
+//            setForeground(Color.GREEN);
+//            SynthButtonUI ui = (SynthButtonUI) this.getUI();
+//            SynthContext s = ui.getContext(this);
+//           // this.setContentAreaFilled(false);
+//            System.out.println(s.getStyle().);
+        }
+    }
+
     public static class Panel extends JPanel {
         public Panel() {
             super(new BorderLayout());
         }
     }
 
+    public static class HRuler extends JSeparator {
+        public HRuler() {
+            super(HORIZONTAL);
+        }
+    }
+
+    public static class VRuler extends JSeparator {
+        public VRuler() {
+            super(VERTICAL);
+        }
+    }
+
     public static class Frame extends JFrame {
         public Frame() {
             setLayout(new BorderLayout());
+            setDefaultCloseOperation(EXIT_ON_CLOSE);
+        }
+    }
+
+    public static class Dialog extends JDialog {
+        public Dialog() {
+            setLayout(new BorderLayout());
+            setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         }
     }
 
@@ -23,15 +67,35 @@ public class XWidgets {
         }
     }
 
-    public static class HBox extends JPanel {
-        public HBox() {
-            setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
+    private static abstract class Box extends JPanel {
+        public Box() {
+            setLayout(new BoxLayout(this, getAlignment()));
+            setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
+        }
+
+        @Override
+        public Component add(Component other) {
+            // Nasty hack to make components fill all space
+            if (other instanceof JPanel || other instanceof JSeparator) return super.add(other);
+            JPanel container = new JPanel(new BorderLayout());
+            container.add(other, BorderLayout.CENTER);
+            return super.add(container);
+        }
+
+        protected abstract int getAlignment();
+    }
+
+    public static class HBox extends Box {
+        @Override
+        protected int getAlignment() {
+            return BoxLayout.X_AXIS;
         }
     }
 
-    public static class VBox extends JPanel {
-        public VBox() {
-            setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+    public static class VBox extends Box {
+        @Override
+        protected int getAlignment() {
+            return BoxLayout.Y_AXIS;
         }
     }
 
