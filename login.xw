@@ -1,39 +1,39 @@
 <xul>
-    <dialog title="Fill in everything!"
-            id="confirm-window"
-            modal="true"
-            resizable="false">
-        <script id="confirm-window-script">
-            $("exit_ok").onClick(function (evt) {
-                $("confirm-window").dispose();
-            });
-        </script>
-        <vbox>
-            <label text="Really, you should ensure all fields are filled."/>
-            <button id="exit_ok" text="OK"/>
-        </vbox>
-    </dialog>
-
     <window title="Login"
             id="main-window"
-            resizable="true">
+            resizable="false">
         <script>
             var exit = function() {
                 $("main-window").dispose()
             }
 
-            $("ok").onClick(function (evt) {
-                if(!$("login").getText().length || !$("pass").getText().length) {
-                    $("confirm-window").pack().toCenter().setVisible(true);
-                } else {
-                    formSubmitted();
-                    exit();
-                }
-            });
-
-            $("cancel").onClick(function (evt) {
+            $("ok").onAction(function (evt) {
+                formSubmitted();
                 exit();
             });
+
+            var key_typed = function(evt) {
+                var login_filled = $("login").getText().length > 0;
+                var pass_filled = $("pass").getText().length > 0;
+                $("ok").setEnabled(login_filled * pass_filled == 1);
+            };
+
+            $("login").onKey(key_typed);
+            $("pass").onKey(key_typed);
+
+            $("cancel").onAction(function (evt) {
+                exit();
+            });
+
+            var server_select = function(server) {
+                return function (evt) {
+                    print('Server ' + server + ' selected.');
+                };
+            };
+
+            $("server1").onAction(server_select(1));
+            $("server2").onAction(server_select(2));
+            $("server3").onAction(server_select(3));
         </script>
         <splitpane>
             <vbox split="left">
@@ -50,14 +50,25 @@
                     </oriented>
                 </hbox>
                 <hr/>
-                <button id="ok" text="OK"/>
+                <button id="ok" text="OK" enabled="false"/>
                 <button id="cancel" text="Cancel"/>
             </vbox>
-            <textarea split="right" id="log" editable="false" text="Some stuff here."/>
+            <tabbedpanel split="right" focusPainted="false">
+                <textarea name="Release Notes" id="log" editable="false"
+                          text="Welcome! Please login to use services."/>
+                <panel name="Server">
+                    <combobox>
+                        <choice id="server1" name="Server 1"/>
+                        <choice id="server2" name="Server 2"/>
+                        <choice id="server3" name="Server 3"/>
+                    </combobox>
+                </panel>
+            </tabbedpanel>
         </splitpane>
     </window>
     <!-- Post-init script to display the window -->
     <script>
         $("main-window").pack().toCenter().setVisible(true);
+
     </script>
 </xul>

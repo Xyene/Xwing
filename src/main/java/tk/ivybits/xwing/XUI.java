@@ -41,6 +41,9 @@ public class XUI {
     }
 
     public <T extends Component> ProxiedContainer<T> $(String id) {
-        return new ProxiedContainer<>(this, (T) byId.get(id));
+        T t = (T) byId.get(id);
+        if (t == null)
+            return null;
+        return new ProxiedContainer<>(this, t);
     }
 }

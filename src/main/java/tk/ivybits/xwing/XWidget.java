@@ -6,14 +6,83 @@ import javax.swing.plaf.synth.SynthButtonUI;
 import javax.swing.plaf.synth.SynthContext;
 import javax.swing.plaf.synth.SynthStyle;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.lang.reflect.Field;
-import java.util.Map;
+import java.util.*;
+import java.util.List;
 
 import static javax.swing.WindowConstants.*;
 
 public interface XWidget {
 
     Component add(Component component, Map<String, String> attributes);
+
+    public static class ComboBox extends JComboBox {
+        public static class Choice extends Container {
+            private String name;
+            List<ActionListener> listenerList = new LinkedList<>();
+
+            public void setName(String name) {
+                this.name = name;
+            }
+
+            public String getName() {
+                return name;
+            }
+
+            public void addActionListener(ActionListener listener) {
+                listenerList.add(listener);
+            }
+
+            @Override
+            public void addNotify() {
+                throw new IllegalStateException();
+            }
+        }
+
+        {
+            setRenderer(new DefaultListCellRenderer() {
+                @Override
+                public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                    return value instanceof Component ? (Component) value : super.getListCellRendererComponent(list,
+                            value,
+                            index,
+                            isSelected,
+                            cellHasFocus);
+                }
+            });
+            this.addItemListener(new ItemListener() {
+                @Override
+                public void itemStateChanged(ItemEvent e) {
+                    if (e.getStateChange() == ItemEvent.SELECTED) {
+                        Choice value = choices.get(e.getItem());
+                        if (value != null) {
+                            ActionEvent evt = new ActionEvent(ComboBox.this, ActionEvent.ACTION_FIRST, null);
+                            for (ActionListener listener : value.listenerList) {
+                                listener.actionPerformed(evt);
+                            }
+                        }
+                    }
+
+                }
+            });
+        }
+
+        Map<String, Choice> choices = new HashMap<>();
+
+        @Override
+        public Component add(Component comp) {
+            if (comp instanceof Choice) {
+                addItem(comp.getName());
+                choices.put(comp.getName(), (Choice) comp);
+                return comp;
+            }
+            return super.add(comp);
+        }
+    }
 
     public static class Panel extends JPanel implements XWidget {
         public Panel() {

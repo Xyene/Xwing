@@ -2,9 +2,10 @@ package tk.ivybits.xwing;
 
 import org.mozilla.javascript.*;
 
+import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class ProxiedContainer<T extends Component> extends ScriptableObject {
@@ -12,8 +13,40 @@ public class ProxiedContainer<T extends Component> extends ScriptableObject {
     private final Component component;
 
     public ProxiedContainer(XUI form, T component) {
+        if (component == null) throw new IllegalArgumentException("component must not be null");
         this.form = form;
         this.component = component;
+    }
+
+    public void onAction(final Object call) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        component.getClass().getMethod("addActionListener", ActionListener.class).invoke(component, new ActionListener() {
+            @Override
+            public void actionPerformed(final ActionEvent mouseEvent) {
+                if (call instanceof Function) {
+                    Context.enter();
+                    ((Function) call).call(form.context, form.scope, form.scope, new Object[]{mouseEvent});
+                    Context.exit();
+                }
+            }
+        });
+    }
+
+    public void onKey(final Object call) {
+        component.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(final KeyEvent keyEvent) {
+                if (call instanceof Function) {
+                    EventQueue.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            Context.enter();
+                            ((Function) call).call(form.context, form.scope, form.scope, new Object[]{keyEvent});
+                            Context.exit();
+                        }
+                    });
+                }
+            }
+        });
     }
 
     public void onClick(final Object call) {
@@ -64,6 +97,33 @@ public class ProxiedContainer<T extends Component> extends ScriptableObject {
     @Override
     public Object get(final String name, Scriptable start) {
         switch (name) {
+            case "onAction":
+                try {
+                    component.getClass().getMethod("addActionListener", ActionListener.class);
+                    return new BaseFunction() {
+                        @Override
+                        public Object call(Context cx, Scriptable scope, Scriptable thisObj,
+                                           Object[] args) {
+                            try {
+                                onAction(args[0]);
+                            } catch (ReflectiveOperationException e) {
+                                e.printStackTrace();
+                            }
+                            return thisObj;
+                        }
+                    };
+                } catch (ReflectiveOperationException ex) {
+                    return null;
+                }
+            case "onKey":
+                return new BaseFunction() {
+                    @Override
+                    public Object call(Context cx, Scriptable scope, Scriptable thisObj,
+                                       Object[] args) {
+                        onKey(args[0]);
+                        return thisObj;
+                    }
+                };
             case "onClick":
                 return new BaseFunction() {
                     @Override
@@ -157,7 +217,7 @@ public class ProxiedContainer<T extends Component> extends ScriptableObject {
                                         // Found, invoke it
                                         Object ret = method.invoke(component, args);
                                         // If it returns void return self; allows fluent interface in JS part
-                                        if(method.getReturnType() == void.class)
+                                        if (method.getReturnType() == void.class)
                                             return thisObj;
                                         return ret;
                                     }

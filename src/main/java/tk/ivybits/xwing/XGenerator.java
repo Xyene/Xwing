@@ -37,6 +37,9 @@ public class XGenerator {
                 put("vr", XWidget.VRuler.class);
                 put("splitpane", XWidget.SplitPane.class);
 
+                put("combobox", XWidget.ComboBox.class);
+                put("choice", XWidget.ComboBox.Choice.class);
+
                 // BoxLayout externs
                 put("hbox", XWidget.HBox.class);
                 put("vbox", XWidget.VBox.class);
