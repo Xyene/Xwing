@@ -37,18 +37,16 @@
         </script>
         <splitpane>
             <vbox split="left">
-                <hbox>
-                    <oriented>
-                        <vbox position="west">
-                            <label text="Login:"/>
-                            <label text="Password:"/>
-                        </vbox>
-                        <vbox position="center">
-                            <textbox id="login" width="100"/>
-                            <hiddentextbox id="pass" width="100"/>
-                        </vbox>
-                    </oriented>
-                </hbox>
+                <panel>
+                    <vbox position="west">
+                        <label text="Login:"/>
+                        <label text="Password:"/>
+                    </vbox>
+                    <vbox position="center">
+                        <textbox id="login" width="100"/>
+                        <hiddentextbox id="pass" width="100"/>
+                    </vbox>
+                </panel>
                 <hr/>
                 <button id="ok" text="OK" enabled="false"/>
                 <button id="cancel" text="Cancel"/>
@@ -69,6 +67,5 @@
     <!-- Post-init script to display the window -->
     <script>
         $("main-window").pack().toCenter().setVisible(true);
-
     </script>
 </xul>

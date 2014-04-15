@@ -91,6 +91,12 @@ public interface XWidget {
 
         @Override
         public Component add(Component component, Map<String, String> attributes) {
+            String position = attributes.get("position");
+            if (position != null) {
+                position = Character.toTitleCase(position.charAt(0)) + position.substring(1);
+                add(component, position);
+                return component;
+            }
             return add(component);
         }
     }
@@ -219,19 +225,6 @@ public interface XWidget {
             super.remove(comp);
             if (comp instanceof AbstractButton)
                 group.remove((AbstractButton) comp);
-        }
-    }
-
-    public static class BorderPanel extends Panel {
-        @Override
-        public Component add(Component component, Map<String, String> attributes) {
-            String position = attributes.get("position");
-            if (position != null) {
-                position = Character.toTitleCase(position.charAt(0)) + position.substring(1);
-                add(component, position);
-                return component;
-            }
-            return add(component);
         }
     }
 

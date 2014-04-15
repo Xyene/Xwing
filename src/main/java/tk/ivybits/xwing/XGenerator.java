@@ -44,9 +44,6 @@ public class XGenerator {
                 put("hbox", XWidget.HBox.class);
                 put("vbox", XWidget.VBox.class);
                 put("box", XWidget.Box.class);
-
-                // BorderLayout externs
-                put("oriented", XWidget.BorderPanel.class);
             }};
             Stack<Container> hierarchy = new Stack<>();
             boolean inScript = false;
@@ -85,7 +82,6 @@ public class XGenerator {
                             // Delegate to setters
                             // TODO: for example, if setter argument is Dimension and given data is "50, 50", convert to Dimension
                             String handle = "set" + Character.toTitleCase(k.charAt(0)) + k.substring(1);
-                            System.out.println(handle);
                             try {
                                 for (Method raw : to.getClass().getMethods()) {
                                     if (raw.getName().equals(handle) && raw.getParameterTypes().length == 1) {
