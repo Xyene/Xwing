@@ -40,6 +40,7 @@ public class XGenerator {
                 // BoxLayout externs
                 put("hbox", XWidget.HBox.class);
                 put("vbox", XWidget.VBox.class);
+                put("box", XWidget.VBox.class);
 
                 // BorderLayout externs
                 put("oriented", XWidget.BorderPanel.class);

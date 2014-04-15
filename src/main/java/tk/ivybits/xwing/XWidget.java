@@ -84,10 +84,22 @@ public interface XWidget {
         }
     }
 
-    static abstract class Box extends JPanel implements XWidget {
+    static class Box extends JPanel implements XWidget {
         public Box() {
-            setLayout(new BoxLayout(this, getAlignment()));
             setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
+        }
+
+        public void setOrient(String orient) {
+            if (getClass() == Box.class) {
+                switch (orient) {
+                    case "horizontal":
+                        setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+                        return;
+                    case "vertical":
+                        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+                        return;
+                }
+            }
         }
 
         @Override
@@ -103,31 +115,17 @@ public interface XWidget {
             container.add(other, BorderLayout.CENTER);
             return super.add(container);
         }
-
-        protected abstract int getAlignment();
     }
 
     public static class HBox extends Box {
-        @Override
-        protected int getAlignment() {
-            return BoxLayout.X_AXIS;
-        }
-
-        @Override
-        public Component add(Component component, Map<String, String> attributes) {
-            return super.add(component);
+        {
+            setOrient("horizontal");
         }
     }
 
     public static class VBox extends Box {
-        @Override
-        protected int getAlignment() {
-            return BoxLayout.Y_AXIS;
-        }
-
-        @Override
-        public Component add(Component component, Map<String, String> attributes) {
-            return super.add(component);
+        {
+            setOrient("vertical");
         }
     }
 
