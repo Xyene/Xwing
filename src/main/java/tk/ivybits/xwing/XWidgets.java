@@ -99,7 +99,7 @@ public class XWidgets {
         }
     }
 
-    public static class ButtonGroup extends JPanel {
+    public static class ButtonGroup extends Panel {
         private final javax.swing.ButtonGroup group = new javax.swing.ButtonGroup();
 
         @Override
@@ -114,6 +114,39 @@ public class XWidgets {
             super.remove(comp);
             if (comp instanceof AbstractButton)
                 group.remove((AbstractButton) comp);
+        }
+    }
+
+    public static class BorderPanel extends Panel {
+        public static class North extends Panel {
+        }
+
+        public static class East extends Panel {
+        }
+
+        public static class South extends Panel {
+        }
+
+        public static class West extends Panel {
+        }
+
+        public static class Center extends Panel {
+        }
+
+        @Override
+        public Component add(Component comp) {
+            if (comp instanceof North)
+                super.add(comp, BorderLayout.NORTH);
+            else if (comp instanceof East)
+                super.add(comp, BorderLayout.EAST);
+            else if (comp instanceof South)
+                super.add(comp, BorderLayout.SOUTH);
+            else if (comp instanceof West)
+                super.add(comp, BorderLayout.WEST);
+            else if (comp instanceof Center)
+                super.add(comp, BorderLayout.CENTER);
+            else return super.add(comp);
+            return comp;
         }
     }
 }

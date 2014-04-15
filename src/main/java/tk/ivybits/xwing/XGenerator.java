@@ -32,11 +32,21 @@ public class XGenerator {
                 put("window", XWidgets.Frame.class);
                 put("dialog", XWidgets.Dialog.class);
                 put("tabbedpanel", XWidgets.TabbedPane.class);
-                put("hbox", XWidgets.HBox.class);
-                put("vbox", XWidgets.VBox.class);
                 put("buttongroup", XWidgets.ButtonGroup.class);
                 put("hr", XWidgets.HRuler.class);
                 put("vr", XWidgets.VRuler.class);
+
+                // BoxLayout externs
+                put("hbox", XWidgets.HBox.class);
+                put("vbox", XWidgets.VBox.class);
+
+                // BorderLayout externs
+                put("oriented", XWidgets.BorderPanel.class);
+                put("north", XWidgets.BorderPanel.North.class);
+                put("east", XWidgets.BorderPanel.East.class);
+                put("south", XWidgets.BorderPanel.South.class);
+                put("west", XWidgets.BorderPanel.West.class);
+                put("center", XWidgets.BorderPanel.Center.class);
             }};
             Stack<Container> hierarchy = new Stack<>();
             boolean inScript = false;
@@ -68,7 +78,6 @@ public class XGenerator {
                     switch (k) {
                         case "width":
                         case "height":
-                        case "resizable":
                             break;
                         case "id":
                             form.byId.put(v, to);
@@ -76,6 +85,7 @@ public class XGenerator {
                             // Delegate to setters
                             // TODO: for example, if setter argument is Dimension and given data is "50, 50", convert to Dimension
                             String handle = "set" + Character.toTitleCase(k.charAt(0)) + k.substring(1);
+                            System.out.println(handle);
                             try {
                                 for (Method raw : to.getClass().getMethods()) {
                                     if (raw.getName().equals(handle) && raw.getParameterTypes().length == 1) {

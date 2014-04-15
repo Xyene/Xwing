@@ -1,7 +1,8 @@
 <xul>
     <dialog title="Fill in everything!"
             id="confirm-window"
-            modal="true">
+            modal="true"
+            resizable="false">
         <script>
             $("exit_ok").onClick(function (evt) {
                 print('attempt close')
@@ -17,7 +18,7 @@
 
     <window title="Login"
             id="main-window"
-            resizable="true">
+            resizable="false">
         <script>
             var exit = function() {
                 $("main-window").dispose()
@@ -39,14 +40,20 @@
         </script>
         <vbox>
             <hbox>
-                <vbox>
-                    <label text="Login:"/>
-                    <label text="Password:"/>
-                </vbox>
-                <vbox>
-                    <textbox id="login" width="100"/>
-                    <hiddentextbox id="pass" width="100"/>
-                </vbox>
+                <oriented>
+                    <west>
+                        <vbox>
+                            <label text="Login:"/>
+                            <label text="Password:"/>
+                        </vbox>
+                    </west>
+                    <center>
+                        <vbox>
+                            <textbox id="login" width="100"/>
+                            <hiddentextbox id="pass" width="100"/>
+                        </vbox>
+                    </center>
+                </oriented>
             </hbox>
             <hr/>
             <button id="ok" text="OK"/>
