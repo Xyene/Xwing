@@ -3,6 +3,7 @@
             id="main-window"
             resizable="false">
         <script>
+        //<![CDATA[
             var exit = function() {
                 $("main-window").dispose()
             }
@@ -15,7 +16,7 @@
             var key_typed = function(evt) {
                 var login_filled = $("login").getText().length > 0;
                 var pass_filled = $("pass").getText().length > 0;
-                $("ok").setEnabled(login_filled * pass_filled == 1);
+                $("ok").setEnabled(login_filled && pass_filled);
             };
 
             $("login").onKey(key_typed);
@@ -34,6 +35,7 @@
             $("server1").onAction(server_select(1));
             $("server2").onAction(server_select(2));
             $("server3").onAction(server_select(3));
+        //]]>
         </script>
         <splitpane>
             <vbox split="left">
@@ -55,11 +57,14 @@
                 <textarea name="Release Notes" id="log" editable="false"
                           text="Welcome! Please login to use services."/>
                 <vbox name="Server">
-                    <combobox position="center">
-                        <choice id="server1" name="Server 1"/>
-                        <choice id="server2" name="Server 2"/>
-                        <choice id="server3" name="Server 3"/>
-                    </combobox>
+                    <panel>
+                        <combobox position="center">
+                            <choice id="server1" name="Server 1"/>
+                            <choice id="server2" name="Server 2"/>
+                            <choice id="server3" name="Server 3"/>
+                        </combobox>
+                        <spinner position="east" min="0" width="75"/>
+                    </panel>
                     <hr/>
                     <progressbar position="south" indeterminate="true" string="Updating..."/>
                 </vbox>

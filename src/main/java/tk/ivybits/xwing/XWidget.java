@@ -20,6 +20,16 @@ public interface XWidget {
 
     Component add(Component component, Map<String, String> attributes);
 
+    public static class Spinner extends JSpinner {
+        public void setMin(int min) {
+            ((SpinnerNumberModel)getModel()).setMinimum(min);
+        }
+
+        public void setMax(int max) {
+            ((SpinnerNumberModel)getModel()).setMaximum(max);
+        }
+    }
+
     public static class ComboBox extends JComboBox {
         public static class Choice extends Container {
             private String name;
@@ -229,7 +239,7 @@ public interface XWidget {
     }
 
     public static class SplitPane extends JSplitPane implements XWidget {
-        public void setMode(String mode) {
+        public void setOrientation(String mode) {
             switch (mode) {
                 case "horizontal":
                     setOrientation(HORIZONTAL_SPLIT);

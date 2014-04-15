@@ -24,6 +24,7 @@ public class XGenerator {
             HashMap<String, Class> externs = new HashMap<String, Class>() {{
                 put("label", JLabel.class);
                 put("button", JButton.class);
+                put("spinner", XWidget.Spinner.class);
                 put("radiobutton", JRadioButton.class);
                 put("textbox", JTextField.class);
                 put("hiddentextbox", JPasswordField.class);
@@ -84,9 +85,10 @@ public class XGenerator {
                             // Delegate to setters
                             // TODO: for example, if setter argument is Dimension and given data is "50, 50", convert to Dimension
                             String handle = "set" + Character.toTitleCase(k.charAt(0)) + k.substring(1);
-                            try {
-                                for (Method raw : to.getClass().getMethods()) {
-                                    if (raw.getName().equals(handle) && raw.getParameterTypes().length == 1) {
+
+                            for (Method raw : to.getClass().getMethods()) {
+                                if (raw.getName().equals(handle) && raw.getParameterTypes().length == 1) {
+                                    try {
                                         Class type = raw.getParameterTypes()[0];
                                         Object converted = v; // String.class
                                         if (type == int.class)
@@ -94,10 +96,10 @@ public class XGenerator {
                                         if (type == boolean.class)
                                             converted = Boolean.parseBoolean(v);
                                         raw.invoke(to, converted);
+                                    } catch (Exception e) {
+                                        // This is perfectly normal for overloaded methods
                                     }
                                 }
-                            } catch (ReflectiveOperationException e) {
-                                e.printStackTrace();
                             }
                     }
                 }
@@ -112,7 +114,7 @@ public class XGenerator {
                         inScript = true;
                         currentScript = new XScript();
                         String id = attrs.get("id");
-                        if(id == null) {
+                        if (id == null) {
                             id = "JS-Script-" + (scripts.size() + 1) + "!" + xul.getName();
                         }
                         currentScript.setId(id);
@@ -128,8 +130,8 @@ public class XGenerator {
 
                                 if (!hierarchy.empty()) {
                                     Container comp = hierarchy.peek();
-                                    if(comp instanceof XWidget)
-                                        ((XWidget)comp).add(instance, attrs);
+                                    if (comp instanceof XWidget)
+                                        ((XWidget) comp).add(instance, attrs);
                                     else
                                         comp.add(instance);
                                 }
