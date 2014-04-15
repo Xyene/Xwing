@@ -36,6 +36,13 @@ public class XGenerator {
                 put("hr", XWidgets.HRuler.class);
                 put("vr", XWidgets.VRuler.class);
 
+                // SplitPane externs
+                put("splitpane", XWidgets.SplitPane.class);
+                put("rightsplit", XWidgets.SplitPane.Right.class);
+                put("topsplit", XWidgets.SplitPane.Right.class);
+                put("leftsplit", XWidgets.SplitPane.Left.class);
+                put("bottomsplit", XWidgets.SplitPane.Left.class);
+
                 // BoxLayout externs
                 put("hbox", XWidgets.HBox.class);
                 put("vbox", XWidgets.VBox.class);

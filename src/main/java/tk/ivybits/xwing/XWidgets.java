@@ -149,4 +149,33 @@ public class XWidgets {
             return comp;
         }
     }
+
+    public static class SplitPane extends JSplitPane {
+        public static class Right extends Panel {
+        }
+
+        public static class Left extends Panel {
+        }
+
+        public void setMode(String mode) {
+            switch(mode) {
+                case "horizontal":
+                    setOrientation(HORIZONTAL_SPLIT);
+                    return;
+                case "vertical":
+                    setOrientation(VERTICAL_SPLIT);
+                    return;
+            }
+        }
+
+        @Override
+        public Component add(Component comp) {
+            if (comp instanceof Right)
+                this.setRightComponent(comp);
+            else if (comp instanceof Left)
+                this.setLeftComponent(comp);
+            else return super.add(comp);
+            return comp;
+        }
+    }
 }

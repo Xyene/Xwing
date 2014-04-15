@@ -9,6 +9,8 @@
                 $("confirm-window").dispose();
                 print('exited');
             });
+
+
         </script>
         <vbox>
             <label text="Really, you should ensure all fields are filled."/>
@@ -18,7 +20,7 @@
 
     <window title="Login"
             id="main-window"
-            resizable="false">
+            resizable="true">
         <script>
             var exit = function() {
                 $("main-window").dispose()
@@ -37,33 +39,44 @@
             $("cancel").onClick(function (evt) {
                 exit();
             });
+
+
         </script>
-        <vbox>
-            <hbox>
-                <oriented>
-                    <west>
-                        <vbox>
-                            <label text="Login:"/>
-                            <label text="Password:"/>
-                        </vbox>
-                    </west>
-                    <center>
-                        <vbox>
-                            <textbox id="login" width="100"/>
-                            <hiddentextbox id="pass" width="100"/>
-                        </vbox>
-                    </center>
-                </oriented>
-            </hbox>
-            <hr/>
-            <button id="ok" text="OK"/>
-            <button id="cancel" text="Cancel"/>
-        </vbox>
+        <splitpane>
+            <leftsplit>
+                <vbox>
+                    <hbox>
+                        <oriented>
+                            <west>
+                                <vbox>
+                                    <label text="Login:"/>
+                                    <label text="Password:"/>
+                                </vbox>
+                            </west>
+                            <center>
+                                <vbox>
+                                    <textbox id="login" width="100"/>
+                                    <hiddentextbox id="pass" width="100"/>
+                                </vbox>
+                            </center>
+                        </oriented>
+                    </hbox>
+                    <hr/>
+                    <button id="ok" text="OK"/>
+                    <button id="cancel" text="Cancel"/>
+                </vbox>
+            </leftsplit>
+            <rightsplit>
+                <textarea id="log" editable="false" text="Some stuff here."/>
+            </rightsplit>
+        </splitpane>
     </window>
     <!-- Post-init script to display the window -->
     <script>
         $("main-window").pack();
         $("main-window").toCenter();
         $("main-window").setVisible(true);
+
+
     </script>
 </xul>
