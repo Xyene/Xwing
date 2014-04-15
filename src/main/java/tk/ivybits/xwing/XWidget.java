@@ -90,6 +90,7 @@ public interface XWidget {
         }
 
         public void setOrient(String orient) {
+            // Do not allow <hbox orient="vertical/>
             if (getClass() == Box.class) {
                 switch (orient) {
                     case "horizontal":
@@ -104,7 +105,7 @@ public interface XWidget {
 
         @Override
         public Component add(Component component, Map<String, String> attributes) {
-            return super.add(component);
+            return add(component);
         }
 
         @Override
@@ -119,13 +120,13 @@ public interface XWidget {
 
     public static class HBox extends Box {
         {
-            setOrient("horizontal");
+            setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         }
     }
 
     public static class VBox extends Box {
         {
-            setOrient("vertical");
+            setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         }
     }
 
