@@ -11,6 +11,7 @@
             });
 
 
+
         </script>
         <vbox>
             <label text="Really, you should ensure all fields are filled."/>
@@ -41,34 +42,27 @@
             });
 
 
+
         </script>
         <splitpane>
-            <leftsplit>
-                <vbox>
-                    <hbox>
-                        <oriented>
-                            <west>
-                                <vbox>
-                                    <label text="Login:"/>
-                                    <label text="Password:"/>
-                                </vbox>
-                            </west>
-                            <center>
-                                <vbox>
-                                    <textbox id="login" width="100"/>
-                                    <hiddentextbox id="pass" width="100"/>
-                                </vbox>
-                            </center>
-                        </oriented>
-                    </hbox>
-                    <hr/>
-                    <button id="ok" text="OK"/>
-                    <button id="cancel" text="Cancel"/>
-                </vbox>
-            </leftsplit>
-            <rightsplit>
-                <textarea id="log" editable="false" text="Some stuff here."/>
-            </rightsplit>
+            <vbox split="left">
+                <hbox>
+                    <oriented>
+                        <vbox position="west">
+                            <label text="Login:"/>
+                            <label text="Password:"/>
+                        </vbox>
+                        <vbox position="center">
+                            <textbox id="login" width="100"/>
+                            <hiddentextbox id="pass" width="100"/>
+                        </vbox>
+                    </oriented>
+                </hbox>
+                <hr/>
+                <button id="ok" text="OK"/>
+                <button id="cancel" text="Cancel"/>
+            </vbox>
+            <textarea split="right" id="log" editable="false" text="Some stuff here."/>
         </splitpane>
     </window>
     <!-- Post-init script to display the window -->
@@ -76,6 +70,7 @@
         $("main-window").pack();
         $("main-window").toCenter();
         $("main-window").setVisible(true);
+
 
 
     </script>

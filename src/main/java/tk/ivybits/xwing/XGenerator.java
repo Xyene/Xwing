@@ -23,37 +23,26 @@ public class XGenerator {
         DefaultHandler handler = new DefaultHandler() {
             HashMap<String, Class> externs = new HashMap<String, Class>() {{
                 put("label", JLabel.class);
-                put("button", XWidgets.Button.class);
+                put("button", JButton.class);
                 put("radiobutton", JRadioButton.class);
                 put("textbox", JTextField.class);
                 put("hiddentextbox", JPasswordField.class);
                 put("textarea", JTextArea.class);
-                put("panel", XWidgets.Panel.class);
-                put("window", XWidgets.Frame.class);
-                put("dialog", XWidgets.Dialog.class);
-                put("tabbedpanel", XWidgets.TabbedPane.class);
-                put("buttongroup", XWidgets.ButtonGroup.class);
-                put("hr", XWidgets.HRuler.class);
-                put("vr", XWidgets.VRuler.class);
-
-                // SplitPane externs
-                put("splitpane", XWidgets.SplitPane.class);
-                put("rightsplit", XWidgets.SplitPane.Right.class);
-                put("topsplit", XWidgets.SplitPane.Right.class);
-                put("leftsplit", XWidgets.SplitPane.Left.class);
-                put("bottomsplit", XWidgets.SplitPane.Left.class);
+                put("panel", XWidget.Panel.class);
+                put("window", XWidget.Frame.class);
+                put("dialog", XWidget.Dialog.class);
+                put("tabbedpanel", XWidget.TabbedPane.class);
+                put("buttongroup", XWidget.ButtonGroup.class);
+                put("hr", XWidget.HRuler.class);
+                put("vr", XWidget.VRuler.class);
+                put("splitpane", XWidget.SplitPane.class);
 
                 // BoxLayout externs
-                put("hbox", XWidgets.HBox.class);
-                put("vbox", XWidgets.VBox.class);
+                put("hbox", XWidget.HBox.class);
+                put("vbox", XWidget.VBox.class);
 
                 // BorderLayout externs
-                put("oriented", XWidgets.BorderPanel.class);
-                put("north", XWidgets.BorderPanel.North.class);
-                put("east", XWidgets.BorderPanel.East.class);
-                put("south", XWidgets.BorderPanel.South.class);
-                put("west", XWidgets.BorderPanel.West.class);
-                put("center", XWidgets.BorderPanel.Center.class);
+                put("oriented", XWidget.BorderPanel.class);
             }};
             Stack<Container> hierarchy = new Stack<>();
             boolean inScript = false;
@@ -128,8 +117,14 @@ public class XGenerator {
                                 make.setAccessible(true);
                                 Container instance = extern.newInstance();
                                 apply(attrs, instance);
-                                if (!hierarchy.empty())
-                                    hierarchy.peek().add(instance);
+
+                                if (!hierarchy.empty()) {
+                                    Container comp = hierarchy.peek();
+                                    if(comp instanceof XWidget)
+                                        ((XWidget)comp).add(instance, attrs);
+                                    else
+                                        comp.add(instance);
+                                }
                                 hierarchy.push(instance);
                             } catch (ReflectiveOperationException e) {
                                 e.printStackTrace();
