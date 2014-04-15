@@ -54,14 +54,15 @@
             <tabbedpanel split="right" focusPainted="false">
                 <textarea name="Release Notes" id="log" editable="false"
                           text="Welcome! Please login to use services."/>
-                <panel name="Server">
+                <vbox name="Server">
                     <combobox position="center">
                         <choice id="server1" name="Server 1"/>
                         <choice id="server2" name="Server 2"/>
                         <choice id="server3" name="Server 3"/>
                     </combobox>
+                    <hr/>
                     <progressbar position="south" indeterminate="true" string="Updating..."/>
-                </panel>
+                </vbox>
             </tabbedpanel>
         </splitpane>
     </window>
