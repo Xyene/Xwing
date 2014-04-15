@@ -258,4 +258,21 @@ public interface XWidget {
             return add(component);
         }
     }
+
+    public static class ProgressBar extends JProgressBar {
+        {
+            setStringPainted(true);
+        }
+
+        public void setOrientation(String mode) {
+            switch (mode) {
+                case "horizontal":
+                    setOrientation(HORIZONTAL);
+                    return;
+                case "vertical":
+                    setOrientation(VERTICAL);
+                    return;
+            }
+        }
+    }
 }

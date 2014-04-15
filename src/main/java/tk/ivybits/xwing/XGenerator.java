@@ -40,6 +40,8 @@ public class XGenerator {
                 put("combobox", XWidget.ComboBox.class);
                 put("choice", XWidget.ComboBox.Choice.class);
 
+                put("progressbar", XWidget.ProgressBar.class);
+
                 // BoxLayout externs
                 put("hbox", XWidget.HBox.class);
                 put("vbox", XWidget.VBox.class);
