@@ -3,15 +3,10 @@
             id="confirm-window"
             modal="true"
             resizable="false">
-        <script>
+        <script id="confirm-window-script">
             $("exit_ok").onClick(function (evt) {
-                print('attempt close')
                 $("confirm-window").dispose();
-                print('exited');
             });
-
-
-
         </script>
         <vbox>
             <label text="Really, you should ensure all fields are filled."/>
@@ -29,7 +24,6 @@
 
             $("ok").onClick(function (evt) {
                 if(!$("login").getText().length || !$("pass").getText().length) {
-                    print('confirm window spawned');
                     $("confirm-window").pack().toCenter().setVisible(true);
                 } else {
                     formSubmitted();
@@ -40,9 +34,6 @@
             $("cancel").onClick(function (evt) {
                 exit();
             });
-
-
-
         </script>
         <splitpane>
             <vbox split="left">
@@ -67,11 +58,6 @@
     </window>
     <!-- Post-init script to display the window -->
     <script>
-        $("main-window").pack();
-        $("main-window").toCenter();
-        $("main-window").setVisible(true);
-
-
-
+        $("main-window").pack().toCenter().setVisible(true);
     </script>
 </xul>

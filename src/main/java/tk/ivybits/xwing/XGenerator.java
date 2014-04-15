@@ -16,7 +16,7 @@ import java.util.*;
 import java.util.List;
 
 public class XGenerator {
-    public static void bind(File xul, final XUI form) throws Exception {
+    public static void bind(final File xul, final XUI form) throws Exception {
         SAXParserFactory factory = SAXParserFactory.newInstance();
         SAXParser saxParser = factory.newSAXParser();
 
@@ -47,8 +47,8 @@ public class XGenerator {
             }};
             Stack<Container> hierarchy = new Stack<>();
             boolean inScript = false;
-            String currentScript = "";
-            List<String> scripts = new ArrayList<>();
+            XScript currentScript = null;
+            List<XScript> scripts = new ArrayList<>();
 
             public Map<String, String> mapAttributes(Attributes attrs) {
                 HashMap<String, String> map = new HashMap<>();
@@ -109,6 +109,12 @@ public class XGenerator {
                 switch (qName) {
                     case "script":
                         inScript = true;
+                        currentScript = new XScript();
+                        String id = attrs.get("id");
+                        if(id == null) {
+                            id = "JS-Script-" + (scripts.size() + 1) + "!" + xul.getName();
+                        }
+                        currentScript.setId(id);
                         break;
                     default:
                         Class<Container> extern = externs.get(qName);
@@ -141,7 +147,7 @@ public class XGenerator {
                     case "script":
                         inScript = false;
                         scripts.add(currentScript);
-                        currentScript = "";
+                        currentScript = null;
                         break;
                     default:
                         if (externs.containsKey(qName))
@@ -153,16 +159,16 @@ public class XGenerator {
             @Override
             public void characters(char[] ch, int start, int length) throws SAXException {
                 if (inScript) {
-                    currentScript += new String(ch, start, length);
+                    currentScript.setScript(currentScript.getScript() + new String(ch, start, length));
                 }
             }
 
             @Override
             public void endDocument() {
-                for (final String script : scripts)
+                for (final XScript script : scripts)
                     try {
                         Context.enter();
-                        form.context.evaluateString(form.scope, script, "<cmd>", 1, null);
+                        form.context.evaluateString(form.scope, script.getScript(), script.getId(), 1, null);
                         Context.exit();
                     } catch (Exception e) {
                         e.printStackTrace();
