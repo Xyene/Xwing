@@ -1,46 +1,141 @@
 package tk.ivybits.xwing;
 
 import javax.swing.*;
-import javax.swing.border.BevelBorder;
-import javax.swing.plaf.synth.SynthButtonUI;
-import javax.swing.plaf.synth.SynthContext;
-import javax.swing.plaf.synth.SynthStyle;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.lang.reflect.Field;
-import java.util.*;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
-
-import static javax.swing.WindowConstants.*;
+import java.util.Map;
 
 public interface XWidget {
 
     Component add(Component component, Map<String, String> attributes);
 
+    public static class Image extends JLabel {
+        public void setSrc(final String path) {
+            EventQueue.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+
+                    try {
+                        setIcon(new ImageIcon(new URL(path)));
+                        revalidate();
+                        setHorizontalAlignment(JLabel.CENTER);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+    }
+
+    public static class Grid extends JPanel {
+        private GridLayout layout = new GridLayout();
+
+        public Grid() {
+            setLayout(layout);
+        }
+
+        public int getVgap() {
+            return layout.getVgap();
+        }
+
+        public void setVgap(int vgap) {
+            layout.setVgap(vgap);
+        }
+
+        public int getHgap() {
+            return layout.getHgap();
+        }
+
+        public void setHgap(int hgap) {
+            layout.setHgap(hgap);
+        }
+
+        public int getRows() {
+            return layout.getRows();
+        }
+
+        public void setRows(int rows) {
+            layout.setRows(rows);
+        }
+
+        public int getColumns() {
+            return layout.getColumns();
+        }
+
+        public void setColumns(int cols) {
+            layout.setColumns(cols);
+        }
+    }
+
+    public static class ColorChooser extends JColorChooser {
+    }
+
+    public static class FileChooser extends JFileChooser {
+    }
+
+    public static class ScrollPane extends JScrollPane {
+        private boolean init = false;
+
+        public ScrollPane() {
+            init = true;
+        }
+
+        @Override
+        public Component add(Component what) {
+            if (!init)
+                return super.add(what);
+            setViewportView(what);
+            return what;
+        }
+    }
+
+    public static class Slider extends JSlider {
+    }
+
     public static class Spinner extends JSpinner {
+        public void setValue(int value) {
+            super.setValue(value);
+        }
+
         public void setMin(int min) {
-            ((SpinnerNumberModel)getModel()).setMinimum(min);
+            ((SpinnerNumberModel) getModel()).setMinimum(min);
         }
 
         public void setMax(int max) {
-            ((SpinnerNumberModel)getModel()).setMaximum(max);
+            ((SpinnerNumberModel) getModel()).setMaximum(max);
         }
     }
 
     public static class ComboBox extends JComboBox {
-        public static class Choice extends Container {
-            private String name;
-            List<ActionListener> listenerList = new LinkedList<>();
+        Map<String, Choice> choices = new HashMap<>();
 
-            public void setName(String name) {
-                this.name = name;
+        @Override
+        public Component add(Component comp) {
+            if (comp instanceof Choice) {
+                addItem(comp.getName());
+                choices.put(comp.getName(), (Choice) comp);
+                return comp;
             }
+            return super.add(comp);
+        }
+
+        public static class Choice extends Container {
+            List<ActionListener> listenerList = new LinkedList<>();
+            private String name;
 
             public String getName() {
                 return name;
+            }
+
+            public void setName(String name) {
+                this.name = name;
             }
 
             public void addActionListener(ActionListener listener) {
@@ -76,21 +171,8 @@ public interface XWidget {
                             }
                         }
                     }
-
                 }
             });
-        }
-
-        Map<String, Choice> choices = new HashMap<>();
-
-        @Override
-        public Component add(Component comp) {
-            if (comp instanceof Choice) {
-                addItem(comp.getName());
-                choices.put(comp.getName(), (Choice) comp);
-                return comp;
-            }
-            return super.add(comp);
         }
     }
 
@@ -141,6 +223,10 @@ public interface XWidget {
 
         @Override
         public Component add(Component component, Map<String, String> attributes) {
+            if (component instanceof JMenuBar) {
+                setJMenuBar((JMenuBar) component);
+                return component;
+            }
             return super.add(component);
         }
     }
@@ -175,16 +261,12 @@ public interface XWidget {
         }
 
         public void setOrient(String orient) {
-            // Do not allow <hbox orient="vertical/>
-            if (getClass() == Box.class) {
-                switch (orient) {
-                    case "horizontal":
-                        setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-                        return;
-                    case "vertical":
-                        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-                        return;
-                }
+            switch (orient) {
+                case "horizontal":
+                    setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+                    return;
+                case "vertical":
+                    setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
             }
         }
 
@@ -215,7 +297,7 @@ public interface XWidget {
         }
     }
 
-    public static class ButtonGroup extends Panel {
+    public static class ButtonGroup extends Box {
         private final javax.swing.ButtonGroup group = new javax.swing.ButtonGroup();
 
         @Override
@@ -246,7 +328,6 @@ public interface XWidget {
                     return;
                 case "vertical":
                     setOrientation(VERTICAL_SPLIT);
-                    return;
             }
         }
 
@@ -281,7 +362,6 @@ public interface XWidget {
                     return;
                 case "vertical":
                     setOrientation(VERTICAL);
-                    return;
             }
         }
     }
