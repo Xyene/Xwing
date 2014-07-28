@@ -8,6 +8,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.awt.*;
 import java.io.File;
+import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -153,7 +154,7 @@ public class XGenerator {
         }
     }
 
-    public static void bind(File xul, Container form, XJS js, Map<String, Component> byId) throws Exception {
+    public static void bind(InputStream xul, Container form, XJS js, Map<String, Component> byId) throws Exception {
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
         Document doc = dBuilder.parse(xul);
@@ -174,7 +175,7 @@ public class XGenerator {
         NodeList scripts = doc.getElementsByTagName("script");
         for (int id = 0; id != scripts.getLength(); id++) {
             Node node = scripts.item(id);
-            String name = String.format("JS-Script-%s!%s", id, xul.getName());
+            String name = String.format("JS-Script-%s", id);
             try {
                 Context.enter();
                 js.getContext().evaluateString(js.getScope(), node.getTextContent().trim(), name, 0, null);
