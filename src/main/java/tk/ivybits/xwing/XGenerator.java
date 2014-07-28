@@ -1,7 +1,7 @@
 package tk.ivybits.xwing;
 
+import org.mozilla.javascript.Context;
 import org.w3c.dom.*;
-import sun.org.mozilla.javascript.internal.Context;
 
 import javax.swing.*;
 import javax.xml.parsers.DocumentBuilder;
