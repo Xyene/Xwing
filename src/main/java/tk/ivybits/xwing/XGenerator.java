@@ -125,6 +125,11 @@ public class XGenerator {
             Map<String, String> attrs = mapAttributes(child);
 
             Class<Container> extern = EXTERNS.get(child.getNodeName());
+            if(extern == null)
+                try {
+                    extern = (Class<Container>) Class.forName(child.getNodeName());
+                } catch (ClassNotFoundException e) {
+                }
             if (extern != null)
                 try {
                     Constructor<Container> make = extern.getConstructor();
@@ -167,7 +172,11 @@ public class XGenerator {
 
         apply(mapAttributes(root), form);
 
-        if (!EXTERNS.get(rootName).isInstance(form))
+        Class extern = EXTERNS.get(rootName);
+        if(extern == null)
+            extern = Class.forName(rootName);
+
+        if (!extern.isInstance(form))
             throw new IllegalArgumentException("form is not a " + rootName);
 
         build(root, byId, hierarchy);
